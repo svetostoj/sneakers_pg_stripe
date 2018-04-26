@@ -51,7 +51,11 @@ class SneakersController < ApplicationController
       rescue Stripe::CardError => e
         flash[:error] = e.message
         redirect_back fallback_location: sneakers_path
-    
+
+      rescue ActiveRecord::RecordNotSaved => e
+        flash[:error] = e.message
+        redirect_back fallback_location: sneakers_path
+        
   end
 
   # POST /sneakers
