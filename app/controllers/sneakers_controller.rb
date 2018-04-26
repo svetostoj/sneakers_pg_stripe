@@ -36,7 +36,7 @@ class SneakersController < ApplicationController
     end
 
 
-      Stripe::Charge.create(
+      charge = Stripe::Charge.create(
         customer: customer.id,
         amount: @sneaker.price.to_i,
         description: @sneaker.description,
@@ -55,7 +55,7 @@ class SneakersController < ApplicationController
       rescue ActiveRecord::RecordNotSaved => e
         flash[:error] = e.message
         redirect_back fallback_location: sneakers_path
-        
+
   end
 
   # POST /sneakers
