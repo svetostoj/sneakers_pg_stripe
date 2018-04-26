@@ -1,6 +1,8 @@
 class SneakersController < ApplicationController
   before_action :set_sneaker, only: [:show, :edit, :update, :destroy, :charge]
 
+  before_action :authenticate_user!, only: [:charge]
+  
   # GET /sneakers
   # GET /sneakers.json
   def index
@@ -24,21 +26,32 @@ class SneakersController < ApplicationController
   # POST /sneakers/1/charge
   def charge
 
-    customer = Stripe::Customer.create(
-      :email => params[:stripeEmail],
-      :source  => params[:stripeToken]
-    )
+    if current_user.stripe_id.blank?
+      customer = Stripe::Customer.create(
+        :email => params[:stripeEmail],
+        :source  => params[:stripeToken]
+      )
+      current_user.stripe_id = customer.id
+      current_user.save!
+    end
 
-    Stripe::Charge.create(
-      customer: customer.id,
-      amount: @sneaker.price.to_f / 100.00,
-      description: @sneaker.description,
-      currency: 'AUD'
-    )
 
-    flash[:notice] = 'Payment made!'
-    redirect_back fallback_location: sneakers_path
+      Stripe::Charge.create(
+        customer: customer.id,
+        amount: @sneaker.price.to_i,
+        description: @sneaker.description,
+        currency: 'AUD'
+      )
 
+      # current_user.charges << Charge.new(charge_id: charge.id)
+      flash[:notice] = 'Payment made!'
+      redirect_back fallback_location: sneakers_path      
+
+
+      rescue Stripe::CardError => e
+        flash[:error] = e.message
+        redirect_back fallback_location: sneakers_path
+    
   end
 
   # POST /sneakers
@@ -91,4 +104,5 @@ class SneakersController < ApplicationController
     def sneaker_params
       params.require(:sneaker).permit(:name, :description, :price)
     end
+
 end

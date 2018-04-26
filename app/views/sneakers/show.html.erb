@@ -12,31 +12,17 @@
 
 <p>
   <strong>Price:</strong>
-  <%= number_to_currency @sneaker.price.to_f / 100.00  %>
+  <%= number_to_currency @sneaker.price_in_dollars %>
 </p>
 
-<%= form_tag charge_sneaker_path(@sneaker) do %>
-  <article>
-    <% if flash[:error].present? %>
-      <div id="error_explanation">
-        <p><%= flash[:error] %></p>
-      </div>
-    <% end %>
-    <label class="amount">
-      <span>Amount: $<%= number_to_currency @sneaker.price.to_f / 100.00 %></span>
-    </label>
-  </article>
-
-  <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-          data-key="<%= Rails.configuration.stripe[:publishable_key] %>"
-          data-email='tim.moon7@gmail.com'
-          data-description=<%= @sneaker.description %>
-          data-currency='AUD'
-          data-amount=<%= @sneaker.price %>
-          data-locale="auto"></script>
+<% if user_signed_in? %>
+  <%= render 'charge_form', sneaker: @sneaker, user: current_user %>
+<% else %>
+    <%= link_to new_user_registration_path, class: 'stripe-button-el' do %>
+     <span style="display: block; min-height: 30px;">Pay with Card</span>
+  <% end %>
 <% end %>
 
-
-
+<br>
 <%= link_to 'Edit', edit_sneaker_path(@sneaker) %> |
 <%= link_to 'Back', sneakers_path %>
