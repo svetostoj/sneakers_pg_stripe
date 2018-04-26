@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
   devise_for :users
+  root 'sneaks#index'
+
   resources :sneakers do
     member do
       # /sneakers/16/charge (much like /sneakers/16/edit)
