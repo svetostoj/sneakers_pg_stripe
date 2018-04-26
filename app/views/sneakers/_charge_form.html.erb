@@ -16,7 +16,7 @@
   <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
           data-key="<%= Rails.configuration.stripe[:publishable_key] %>"
           data-email='tim.moon7@gmail.com'
-          data-description=<%= sneaker.name %>
+          data-name='<%= sneaker.name %>'
           data-currency='AUD'
           data-amount=<%= sneaker.price %>
           data-locale="auto"></script>

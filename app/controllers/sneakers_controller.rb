@@ -35,7 +35,6 @@ class SneakersController < ApplicationController
       current_user.save!
     end
 
-
       charge = Stripe::Charge.create(
         customer: customer.id,
         amount: @sneaker.price.to_i,
